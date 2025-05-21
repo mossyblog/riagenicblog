@@ -31,9 +31,18 @@ function generateRSSFeed() {
         const match = fileContents.match(frontmatterRegex);
         const frontmatter = match ? match[1] : '';
         
+        // Define interface for post metadata
+        interface PostMetadata {
+          title?: string;
+          date?: string;
+          slug?: string;
+          description?: string;
+          [key: string]: string | undefined;
+        }
+        
         // Parse frontmatter
         const frontmatterLines = frontmatter.split('\n');
-        const metadata: any = {};
+        const metadata: PostMetadata = {};
         
         frontmatterLines.forEach(line => {
           const parts = line.split(':');
@@ -109,19 +118,19 @@ try {
 const nextConfig: NextConfig = {
   // Skip TypeScript type checking during builds
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: true, 
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Enable static exports
-  output: 'export',
-  // Add base path for GitHub Pages
-  basePath: '/riagenicblog',
   // Configure image domains if needed
   images: {
     unoptimized: true, // For static export
   },
+  // For GitHub Pages deployment, uncomment these:
+  // output: 'export',
+  // trailingSlash: true,
+  // basePath: '/riagenicblog',
 };
 
 export default nextConfig;

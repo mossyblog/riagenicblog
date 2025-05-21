@@ -11,15 +11,14 @@ export const dynamicParams = true;
 
 // Match Next.js generated PageProps type exactly
 interface PageProps {
-  params?: Promise<{ slug: string }>;
-  searchParams?: Promise<unknown>; // Changed from Promise<any>
+  params: { slug: string };
+  searchParams?: Record<string, string | string[] | undefined>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  // Use direct await as params is Promise | undefined; if it exists, it's a Promise.
-  const resolvedParams = params ? await params : undefined;
+  const { slug } = params;
   
-  if (!resolvedParams?.slug) {
+  if (!slug) {
     return {
       title: 'Post Not Found',
     };
@@ -29,13 +28,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   let post = null;
   
   try {
-    post = await getPostBySlugFromSupabase(resolvedParams.slug);
+    post = await getPostBySlugFromSupabase(slug);
     if (!post) {
-      post = getPostBySlug(resolvedParams.slug);
+      post = getPostBySlug(slug);
     }
   } catch (error) {
     console.error('Error fetching post from Supabase, falling back to filesystem:', error);
-    post = getPostBySlug(resolvedParams.slug);
+    post = getPostBySlug(slug);
   }
   
   if (!post) {
@@ -58,13 +57,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function BlogPostPage({ params }: PageProps) {
-  // Check if params exists and if it's promise-like in a type-safe way
-  if (!params || (typeof (params as { then?: (...args: unknown[]) => unknown }).then === 'function')) {
-    notFound();
-    return null;
-  }
-  
-  const { slug } = params as { slug: string };
+  const { slug } = params;
   
   // Try to get post from Supabase first, fall back to filesystem
   let post = null;

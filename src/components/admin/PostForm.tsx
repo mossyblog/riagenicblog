@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { Post } from '@/lib/database.types';
 import slugify from '@/lib/utils/slugify';
+import { ensureErrorWithMessage } from '@/lib/error-types';
 
 // Dynamically import the markdown editor to avoid SSR issues
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
@@ -86,8 +87,9 @@ export default function PostForm({ post, categories }: PostFormProps) {
         router.push('/admin/posts');
         router.refresh();
       }, 1500);
-    } catch (err: any) {
-      setError(err.message || 'An error occurred');
+    } catch (err: unknown) {
+      const error = ensureErrorWithMessage(err);
+      setError(error.message || 'An error occurred');
     } finally {
       setIsSaving(false);
     }

@@ -2,7 +2,6 @@
 
 import React, { FormEvent, useState } from 'react';
 import { createClient } from '@/lib/supabase';
-import { redirect } from 'next/navigation';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -28,8 +27,11 @@ export default function LoginPage() {
 
       // Redirect to admin dashboard
       window.location.href = '/admin';
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign in');
+    } catch (err: unknown) {
+      const error = err && typeof err === 'object' && 'message' in err 
+        ? err.message as string 
+        : 'Failed to sign in';
+      setError(error || 'Failed to sign in');
       setLoading(false);
     }
   };
