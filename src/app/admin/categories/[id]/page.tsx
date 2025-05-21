@@ -10,7 +10,10 @@ interface EditCategoryPageProps {
   searchParams?: Record<string, string | string[] | undefined>;
 }
 
-export default async function EditCategoryPage({ params }: EditCategoryPageProps) {
+export default async function EditCategoryPage({ params }: {
+  params: { id: string };
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
   const category = await getCategoryById(params.id);
   
   if (!category) {
