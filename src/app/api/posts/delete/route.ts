@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPostById, deletePost } from '@/lib/supabase-posts';
 import { requireAuth } from '@/lib/auth';
+import { ErrorWithMessage, ensureErrorWithMessage } from '@/lib/error-types';
 
 export async function POST(request: NextRequest) {
   // Check if user is authenticated
   try {
     await requireAuth();
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
@@ -33,8 +34,9 @@ export async function POST(request: NextRequest) {
     
     // Redirect to posts list
     return NextResponse.redirect(new URL('/admin/posts', request.url));
-  } catch (error: any) {
-    console.error('Error deleting post:', error);
-    return NextResponse.json({ message: error.message || 'An error occurred' }, { status: 500 });
+  } catch (error: unknown) {
+    const err = ensureErrorWithMessage(error);
+    console.error('Error deleting post:', err);
+    return NextResponse.json({ message: err.message || 'An error occurred' }, { status: 500 });
   }
 }

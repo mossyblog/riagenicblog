@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createPost } from '@/lib/supabase-posts';
 import { requireAuth } from '@/lib/auth';
+import { ErrorWithMessage, ensureErrorWithMessage } from '@/lib/error-types';
 
 export async function POST(request: NextRequest) {
   // Check if user is authenticated
   try {
     await requireAuth();
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
@@ -34,8 +35,9 @@ export async function POST(request: NextRequest) {
     }
     
     return NextResponse.json({ post, message: 'Post created successfully' }, { status: 201 });
-  } catch (error: any) {
-    console.error('Error creating post:', error);
-    return NextResponse.json({ message: error.message || 'An error occurred' }, { status: 500 });
+  } catch (error: unknown) {
+    const err = ensureErrorWithMessage(error);
+    console.error('Error creating post:', err);
+    return NextResponse.json({ message: err.message || 'An error occurred' }, { status: 500 });
   }
 }
