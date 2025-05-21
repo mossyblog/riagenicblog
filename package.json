@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare-hooks": "cp .github/hooks/pre-commit .git/hooks/ && chmod +x .git/hooks/pre-commit"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",

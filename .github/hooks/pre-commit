@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Run lint check before committing
+echo "Running linting checks..."
+npm run lint
+
+# If linting fails, prevent the commit
+if [ $? -ne 0 ]; then
+  echo "Linting failed. Please fix the errors and try committing again."
+  exit 1
+fi
+
+echo "Linting passed."
+exit 0
