@@ -3,13 +3,6 @@ import { notFound } from 'next/navigation';
 import CategoryForm from '@/components/admin/CategoryForm';
 import { getCategoryById } from '@/lib/categories';
 
-interface EditCategoryPageProps {
-  params: {
-    id: string;
-  };
-  searchParams?: Record<string, string | string[] | undefined>;
-}
-
 export default async function EditCategoryPage({ params }: {
   params: { id: string };
   searchParams?: Record<string, string | string[] | undefined>;
