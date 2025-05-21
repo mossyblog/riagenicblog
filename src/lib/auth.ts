@@ -3,6 +3,15 @@ import { redirect } from 'next/navigation';
 import { createServerClient } from '@supabase/ssr';
 
 /**
+ * Interface for cookie options
+ */
+interface CookieOptions {
+  name: string;
+  value?: string;
+  [key: string]: unknown;
+}
+
+/**
  * Create a Supabase server client with cookies
  */
 export function createClient() {
@@ -16,10 +25,10 @@ export function createClient() {
         get(name: string) {
           return cookieStore.get(name)?.value;
         },
-        set(name: string, value: string, options: any) {
+        set(name: string, value: string, options: CookieOptions) {
           cookieStore.set({ name, value, ...options });
         },
-        remove(name: string, options: any) {
+        remove(name: string, options: CookieOptions) {
           cookieStore.delete({ name, ...options });
         },
       },

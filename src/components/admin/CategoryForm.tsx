@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Category } from '@/lib/database.types';
 import slugify from '@/lib/utils/slugify';
+import { ErrorWithMessage, ensureErrorWithMessage } from '@/lib/error-types';
 
 interface CategoryFormProps {
   category?: Category;
@@ -64,8 +65,9 @@ export default function CategoryForm({ category }: CategoryFormProps) {
         router.push('/admin/categories');
         router.refresh();
       }, 1500);
-    } catch (err: any) {
-      setError(err.message || 'An error occurred');
+    } catch (err: unknown) {
+      const error = ensureErrorWithMessage(err);
+      setError(error.message || 'An error occurred');
     } finally {
       setIsSaving(false);
     }
