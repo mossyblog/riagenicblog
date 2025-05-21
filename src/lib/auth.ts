@@ -1,35 +1,28 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { createServerClient } from '@supabase/ssr';
-
-/**
- * Interface for cookie options
- */
-interface CookieOptions {
-  name: string;
-  value?: string;
-  [key: string]: unknown;
-}
+import type { CookieOptions } from '@supabase/ssr';
 
 /**
  * Create a Supabase server client with cookies
  */
 export function createClient() {
-  const cookieStore = cookies();
-  
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || '',
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
     {
       cookies: {
         get(name: string) {
-          return cookieStore.get(name)?.value;
+          return (cookies() as unknown as { get: (name: string) => { value: string } | undefined })
+            .get(name)?.value;
         },
         set(name: string, value: string, options: CookieOptions) {
-          cookieStore.set({ name, value, ...options });
+          (cookies() as unknown as { set: (cookie: Record<string, unknown>) => void })
+            .set({ name, value, ...options });
         },
         remove(name: string, options: CookieOptions) {
-          cookieStore.delete({ name, ...options });
+          (cookies() as unknown as { delete: (cookie: Record<string, unknown>) => void })
+            .delete({ name, ...options });
         },
       },
     }

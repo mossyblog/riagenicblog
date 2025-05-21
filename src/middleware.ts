@@ -1,13 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-
-// Define cookie options interface
-interface CookieOptions {
-  name: string;
-  value: string;
-  [key: string]: unknown;
-}
+import type { CookieOptions } from '@supabase/ssr';
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();

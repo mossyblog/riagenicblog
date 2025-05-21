@@ -123,10 +123,6 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Enable static exports
-  output: 'export',
-  // Add base path for GitHub Pages
-  basePath: '/riagenicblog',
   // Configure image domains if needed
   images: {
     unoptimized: true, // For static export
