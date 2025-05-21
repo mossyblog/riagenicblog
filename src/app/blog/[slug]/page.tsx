@@ -1,4 +1,4 @@
-import { getPostBySlug, getAllPostPaths } from '@/lib/posts';
+import { getPostBySlug } from '@/lib/posts';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import PostLayout from '@/components/PostLayout';
 import { components } from '@/components/MDXComponents';
