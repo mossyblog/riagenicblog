@@ -1,6 +1,5 @@
 import React from 'react';
 import { getAllPosts } from '@/lib/posts';
-import { getAllPostsFromSupabase } from '@/lib/supabase-posts';
 import PostList from '@/components/PostList';
 import Link from 'next/link';
 import { Metadata } from 'next';
@@ -10,25 +9,8 @@ export const metadata: Metadata = {
   description: 'Articles about development, technology, and programming',
 };
 
-// Set dynamic rendering for Server-Side Rendering
-export const dynamic = 'force-dynamic';
-
-export default async function BlogPage() {
-  // Try to get posts from Supabase first, fall back to filesystem if needed
-  let posts = [];
-  
-  try {
-    // Get posts from Supabase
-    posts = await getAllPostsFromSupabase();
-    
-    // If no posts in Supabase yet, fall back to filesystem
-    if (posts.length === 0) {
-      posts = getAllPosts();
-    }
-  } catch (error) {
-    console.error('Error fetching posts from Supabase, falling back to filesystem:', error);
-    posts = getAllPosts();
-  }
+export default function BlogPage() {
+  const posts = getAllPosts();
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">

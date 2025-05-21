@@ -11,25 +11,13 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@radix-ui/react-alert-dialog": "^1.1.14",
-    "@radix-ui/react-dialog": "^1.1.14",
-    "@radix-ui/react-dropdown-menu": "^2.1.15",
-    "@radix-ui/react-label": "^2.1.7",
-    "@radix-ui/react-slot": "^1.2.3",
-    "@radix-ui/react-switch": "^1.2.5",
-    "@radix-ui/react-tabs": "^1.1.12",
-    "@supabase/ssr": "^0.6.1",
-    "@supabase/supabase-js": "^2.49.7",
-    "@uiw/react-md-editor": "^4.0.6",
-    "class-variance-authority": "^0.7.1",
     "gray-matter": "^4.0.3",
     "next": "15.3.2",
     "next-mdx-remote": "^5.0.0",
     "next-themes": "^0.4.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "rehype-highlight": "^7.0.2",
-    "tailwindcss-animate": "^1.0.7"
+    "rehype-highlight": "^7.0.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

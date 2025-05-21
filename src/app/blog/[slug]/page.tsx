@@ -1,13 +1,12 @@
 import { getPostBySlug } from '@/lib/posts';
-import { getPostBySlugFromSupabase } from '@/lib/supabase-posts';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import PostLayout from '@/components/PostLayout';
 import { components } from '@/components/MDXComponents';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 
-export const dynamic = 'force-dynamic';
-export const dynamicParams = true;
+export const dynamic = 'error';
+export const dynamicParams = false;
 
 // Match Next.js generated PageProps type exactly
 interface PageProps {
@@ -15,28 +14,18 @@ interface PageProps {
   searchParams?: Promise<unknown>; // Changed from Promise<any>
 }
 
+export function generateStaticParams() {
+  return [
+    { slug: 'hello-world' },
+    { slug: 'getting-started-with-markdown' },
+    { slug: 'building-a-blog-with-nextjs-and-markdown' }
+  ];
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   // Use direct await as params is Promise | undefined; if it exists, it's a Promise.
   const resolvedParams = params ? await params : undefined;
-  
-  if (!resolvedParams?.slug) {
-    return {
-      title: 'Post Not Found',
-    };
-  }
-  
-  // Try to get post from Supabase first, fall back to filesystem
-  let post = null;
-  
-  try {
-    post = await getPostBySlugFromSupabase(resolvedParams.slug);
-    if (!post) {
-      post = getPostBySlug(resolvedParams.slug);
-    }
-  } catch (error) {
-    console.error('Error fetching post from Supabase, falling back to filesystem:', error);
-    post = getPostBySlug(resolvedParams.slug);
-  }
+  const post = getPostBySlug(resolvedParams?.slug);
   
   if (!post) {
     return {
@@ -57,27 +46,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function BlogPostPage({ params }: PageProps) {
+export default function BlogPostPage({ params }: PageProps) {
   // Check if params exists and if it's promise-like in a type-safe way
   if (!params || (typeof (params as { then?: (...args: unknown[]) => unknown }).then === 'function')) {
     notFound();
     return null;
   }
-  
-  const { slug } = params as { slug: string };
-  
-  // Try to get post from Supabase first, fall back to filesystem
-  let post = null;
-  
-  try {
-    post = await getPostBySlugFromSupabase(slug);
-    if (!post) {
-      post = getPostBySlug(slug);
-    }
-  } catch (error) {
-    console.error('Error fetching post from Supabase, falling back to filesystem:', error);
-    post = getPostBySlug(slug);
-  }
+  // If params exists and is not a promise, cast it to use its properties
+  const post = getPostBySlug((params as unknown as { slug: string }).slug);
   
   if (!post) {
     notFound();
