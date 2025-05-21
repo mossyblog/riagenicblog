@@ -2,6 +2,13 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
+// Define cookie options interface
+interface CookieOptions {
+  name: string;
+  value?: string;
+  [key: string]: unknown;
+}
+
 export async function POST() {
   const cookieStore = cookies();
   
@@ -13,10 +20,10 @@ export async function POST() {
         get(name: string) {
           return cookieStore.get(name)?.value;
         },
-        set(name: string, value: string, options: any) {
+        set(name: string, value: string, options: CookieOptions) {
           cookieStore.set({ name, value, ...options });
         },
-        remove(name: string, options: any) {
+        remove(name: string, options: CookieOptions) {
           cookieStore.delete({ name, ...options });
         },
       },
