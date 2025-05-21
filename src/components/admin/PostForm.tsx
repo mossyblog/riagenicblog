@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { Post } from '@/lib/database.types';
 import slugify from '@/lib/utils/slugify';
-import { ErrorWithMessage, ensureErrorWithMessage } from '@/lib/error-types';
+import { ensureErrorWithMessage } from '@/lib/error-types';
 
 // Dynamically import the markdown editor to avoid SSR issues
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });

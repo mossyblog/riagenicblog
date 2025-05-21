@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createPost } from '@/lib/supabase-posts';
 import { requireAuth } from '@/lib/auth';
-import { ErrorWithMessage, ensureErrorWithMessage } from '@/lib/error-types';
+import { ensureErrorWithMessage } from '@/lib/error-types';
 
 export async function POST(request: NextRequest) {
   // Check if user is authenticated

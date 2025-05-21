@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Category } from '@/lib/database.types';
 import slugify from '@/lib/utils/slugify';
-import { ErrorWithMessage, ensureErrorWithMessage } from '@/lib/error-types';
+import { ensureErrorWithMessage } from '@/lib/error-types';
 
 interface CategoryFormProps {
   category?: Category;
