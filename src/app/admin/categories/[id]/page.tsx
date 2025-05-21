@@ -3,12 +3,12 @@ import { notFound } from 'next/navigation';
 import CategoryForm from '@/components/admin/CategoryForm';
 import { getCategoryById } from '@/lib/categories';
 
-type PageProps = {
+type EditCategoryPageOwnProps = {
   params: { id: string };
   searchParams?: Record<string, string | string[] | undefined>;
 };
 
-export default async function EditCategoryPage({ params }: PageProps) {
+export default async function EditCategoryPage({ params }: EditCategoryPageOwnProps) {
   const category = await getCategoryById(params.id);
   
   if (!category) {
