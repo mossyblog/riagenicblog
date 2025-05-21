@@ -62,24 +62,25 @@ function generateRSSFeed() {
     
     const posts = getAllPosts();
     const siteURL = process.env.SITE_URL || 'https://example.com';
+    const basePath = '/riagenicblog'; // Add base path for GitHub Pages
     const date = new Date();
     
     const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
   <title>DevMarkBlog</title>
-  <link>${siteURL}</link>
+  <link>${siteURL}${basePath}</link>
   <description>A minimal, performant, developer-friendly blog site using Next.js and Markdown</description>
   <language>en</language>
   <lastBuildDate>${date.toUTCString()}</lastBuildDate>
-  <atom:link href="${siteURL}/rss.xml" rel="self" type="application/rss+xml"/>
+  <atom:link href="${siteURL}${basePath}/rss.xml" rel="self" type="application/rss+xml"/>
   ${posts
     .map((post) => {
       return `
   <item>
     <title>${post.title}</title>
-    <link>${siteURL}/blog/${post.slug}</link>
-    <guid isPermaLink="true">${siteURL}/blog/${post.slug}</guid>
+    <link>${siteURL}${basePath}/blog/${post.slug}</link>
+    <guid isPermaLink="true">${siteURL}${basePath}/blog/${post.slug}</guid>
     <description>${post.description || ''}</description>
     <pubDate>${new Date(post.date).toUTCString()}</pubDate>
   </item>`;
@@ -115,6 +116,8 @@ const nextConfig: NextConfig = {
   },
   // Enable static exports
   output: 'export',
+  // Add base path for GitHub Pages
+  basePath: '/riagenicblog',
   // Configure image domains if needed
   images: {
     unoptimized: true, // For static export
