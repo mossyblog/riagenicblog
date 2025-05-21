@@ -57,6 +57,20 @@ npm run build
 
 This will create a static export in the `out` directory, which can be deployed to any static hosting service.
 
+## Code Quality & Error Checking
+
+Before pushing changes or creating a PR, ensure your code passes all quality checks:
+
+```bash
+# Run linting checks
+npm run lint
+
+# Install pre-commit hooks to automatically check before committing
+npm run prepare-hooks
+```
+
+The GitHub Actions workflow will also run linting checks before deployment to catch any issues early.
+
 ## Project Structure
 
 ```
