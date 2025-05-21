@@ -31,9 +31,18 @@ function generateRSSFeed() {
         const match = fileContents.match(frontmatterRegex);
         const frontmatter = match ? match[1] : '';
         
+        // Define interface for post metadata
+        interface PostMetadata {
+          title?: string;
+          date?: string;
+          slug?: string;
+          description?: string;
+          [key: string]: string | undefined;
+        }
+        
         // Parse frontmatter
         const frontmatterLines = frontmatter.split('\n');
-        const metadata: any = {};
+        const metadata: PostMetadata = {};
         
         frontmatterLines.forEach(line => {
           const parts = line.split(':');
