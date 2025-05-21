@@ -8,10 +8,10 @@ import { Metadata } from 'next';
 export const dynamic = 'error';
 export const dynamicParams = false;
 
+// Match Next.js generated PageProps type exactly
 interface PageProps {
-  params: {
-    slug: string;
-  };
+  params?: Promise<{ slug: string }>;
+  searchParams?: Promise<any>;
 }
 
 export function generateStaticParams() {
@@ -23,7 +23,9 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const post = getPostBySlug(params.slug);
+  // Await params if it's a Promise
+  const resolvedParams = params ? await params : undefined;
+  const post = getPostBySlug(resolvedParams?.slug);
   
   if (!post) {
     return {
@@ -45,10 +47,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default function BlogPostPage({ params }: PageProps) {
-  const post = getPostBySlug(params.slug);
+  // If params is missing or a Promise, show notFound
+  if (!params || typeof (params as any).then === 'function') {
+    notFound();
+    return null;
+  }
+  // TypeScript: force cast via unknown to avoid type error
+  const post = getPostBySlug((params as unknown as { slug: string }).slug);
   
   if (!post) {
     notFound();
+    return null;
   }
   
   return (

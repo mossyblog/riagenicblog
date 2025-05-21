@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run type-check && next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare-hooks": "cp .github/hooks/pre-commit .git/hooks/ && chmod +x .git/hooks/pre-commit"
+    "prepare-hooks": "cp .github/hooks/pre-commit .git/hooks/ && chmod +x .git/hooks/pre-commit",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
