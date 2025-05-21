@@ -8,11 +8,11 @@ import { Metadata } from 'next';
 export const dynamic = 'error';
 export const dynamicParams = false;
 
-type Params = {
+interface PageProps {
   params: {
     slug: string;
   };
-};
+}
 
 export function generateStaticParams() {
   return [
@@ -22,7 +22,7 @@ export function generateStaticParams() {
   ];
 }
 
-export async function generateMetadata({ params }: Params): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const post = getPostBySlug(params.slug);
   
   if (!post) {
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-export default function BlogPostPage({ params }: Params) {
+export default function BlogPostPage({ params }: PageProps) {
   const post = getPostBySlug(params.slug);
   
   if (!post) {
