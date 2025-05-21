@@ -8,6 +8,8 @@ A minimal, performant, developer-friendly blog site where each post is authored 
 - **Blog Index Page**: Auto-generated listing of all blog posts, ordered by date
 - **Post Page Rendering**: Clean URL routes with MDX support and custom styling
 - **SEO & RSS Feed**: Proper meta tags and RSS feed generation
+- **Admin Portal**: Secure admin interface for managing blog content
+- **Supabase Integration**: Database-backed content management with authentication
 
 ## Getting Started
 
@@ -28,12 +30,20 @@ cd riagenicblog
 npm install
 ```
 
-3. Run the development server:
+3. Set up environment variables:
+```
+# Create a .env.local file with the following variables
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SITE_URL=http://localhost:3000 # Adjust for production
+```
+
+4. Run the development server:
 ```bash
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Creating New Posts
 
@@ -75,18 +85,19 @@ The GitHub Actions workflow will also run linting checks before deployment to ca
 
 ```
 /content
-  /posts/          # Markdown posts go here
-    hello-world.md
-    etc.
+  /posts/          # Markdown posts go here (legacy)
 
 /public            # Static assets
   /rss.xml         # Generated RSS feed
 
 /src
   /app             # Next.js App Router pages
+    /admin         # Admin portal pages
+    /api           # API routes for admin functionality
     /blog          # Blog-related pages
       /[slug]      # Individual post pages
   /components      # React components
+    /admin         # Admin-specific components
   /lib             # Utility functions
 ```
 
@@ -95,5 +106,6 @@ The GitHub Actions workflow will also run linting checks before deployment to ca
 - [Next.js](https://nextjs.org/) - React framework with App Router
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
 - [TailwindCSS](https://tailwindcss.com/) - Utility-first CSS framework
+- [Supabase](https://supabase.com/) - Backend-as-a-Service for database and auth
 - [Gray Matter](https://github.com/jonschlinkert/gray-matter) - Frontmatter parsing
 - [MDX](https://mdxjs.com/) - Markdown with JSX
