@@ -65,7 +65,39 @@ tags: ["tag1", "tag2"]
 npm run build
 ```
 
-This will create a static export in the `out` directory, which can be deployed to any static hosting service.
+This will create a production build optimized for server-side rendering.
+
+### Deploying to Vercel
+
+The simplest way to deploy this application is with Vercel:
+
+1. Connect your repository to Vercel
+2. Set up the required environment variables:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SITE_URL=your_production_url
+   ```
+3. Deploy!
+
+### Deploying to GitHub Pages
+
+For a static site deployment to GitHub Pages:
+
+1. Uncomment the following lines in `next.config.ts`:
+   ```typescript
+   // output: 'export',
+   // trailingSlash: true,
+   // basePath: '/riagenicblog',
+   ```
+
+2. Use the GitHub Actions workflow in `.github/workflows/deploy-pages.yml`:
+   - Go to your repository's Actions tab
+   - Run the "Deploy to GitHub Pages" workflow manually
+
+This will generate a static export and deploy it to GitHub Pages.
+
+Note: Since GitHub Pages is a static hosting service, dynamic features that require server-side rendering (like API routes and authentication) won't work in the GitHub Pages deployment.
 
 ## Code Quality & Error Checking
 

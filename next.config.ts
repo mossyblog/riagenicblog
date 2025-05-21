@@ -118,7 +118,7 @@ try {
 const nextConfig: NextConfig = {
   // Skip TypeScript type checking during builds
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: true, 
   },
   eslint: {
     ignoreDuringBuilds: true,
@@ -127,6 +127,10 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true, // For static export
   },
+  // For GitHub Pages deployment, uncomment these:
+  // output: 'export',
+  // trailingSlash: true,
+  // basePath: '/riagenicblog',
 };
 
 export default nextConfig;

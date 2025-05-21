@@ -2,30 +2,30 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
   <title>DevMarkBlog</title>
-  <link>https://example.com/riagenicblog</link>
+  <link>https://mossyblog.github.io/riagenicblog</link>
   <description>A minimal, performant, developer-friendly blog site using Next.js and Markdown</description>
   <language>en</language>
-  <lastBuildDate>Wed, 21 May 2025 15:45:01 GMT</lastBuildDate>
-  <atom:link href="https://example.com/riagenicblog/rss.xml" rel="self" type="application/rss+xml"/>
+  <lastBuildDate>Wed, 21 May 2025 15:57:19 GMT</lastBuildDate>
+  <atom:link href="https://mossyblog.github.io/riagenicblog/rss.xml" rel="self" type="application/rss+xml"/>
   
   <item>
     <title>Hello World</title>
-    <link>https://example.com/riagenicblog/blog/hello-world</link>
-    <guid isPermaLink="true">https://example.com/riagenicblog/blog/hello-world</guid>
+    <link>https://mossyblog.github.io/riagenicblog/blog/hello-world</link>
+    <guid isPermaLink="true">https://mossyblog.github.io/riagenicblog/blog/hello-world</guid>
     <description>Welcome to DevMarkBlog, a minimal and developer-friendly blog platform.</description>
     <pubDate>Tue, 21 May 2024 00:00:00 GMT</pubDate>
   </item>
   <item>
     <title>Getting Started with Markdown</title>
-    <link>https://example.com/riagenicblog/blog/getting-started-with-markdown</link>
-    <guid isPermaLink="true">https://example.com/riagenicblog/blog/getting-started-with-markdown</guid>
+    <link>https://mossyblog.github.io/riagenicblog/blog/getting-started-with-markdown</link>
+    <guid isPermaLink="true">https://mossyblog.github.io/riagenicblog/blog/getting-started-with-markdown</guid>
     <description>Learn the basics of Markdown syntax for writing blog posts.</description>
     <pubDate>Mon, 20 May 2024 00:00:00 GMT</pubDate>
   </item>
   <item>
     <title>Building a Blog with Next.js and Markdown</title>
-    <link>https://example.com/riagenicblog/blog/building-a-blog-with-nextjs-and-markdown</link>
-    <guid isPermaLink="true">https://example.com/riagenicblog/blog/building-a-blog-with-nextjs-and-markdown</guid>
+    <link>https://mossyblog.github.io/riagenicblog/blog/building-a-blog-with-nextjs-and-markdown</link>
+    <guid isPermaLink="true">https://mossyblog.github.io/riagenicblog/blog/building-a-blog-with-nextjs-and-markdown</guid>
     <description>Learn how to build a static blog using Next.js and Markdown files.</description>
     <pubDate>Sun, 19 May 2024 00:00:00 GMT</pubDate>
   </item>

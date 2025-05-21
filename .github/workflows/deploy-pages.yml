@@ -1,0 +1,105 @@
+# Workflow for deploying Next.js site to GitHub Pages
+name: Deploy to GitHub Pages
+
+on:
+  # Allow manual triggering from Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: 'npm'
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+        with:
+          static_site_generator: next
+      
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Update next.config.ts for static export
+        run: |
+          sed -i 's|// output: .export.|output: "export",|g' next.config.ts
+          sed -i 's|// trailingSlash: true,|trailingSlash: true,|g' next.config.ts
+          sed -i 's|// basePath: ./riagenicblog.,|basePath: "/riagenicblog",|g' next.config.ts
+      
+      - name: Prepare for static export
+        run: |
+          # Temporarily move API routes and dynamic admin pages
+          mkdir -p tmp_excluded
+          
+          # Move API routes
+          find src/app/api -name "route.ts" -o -name "route.tsx" | while read file; do
+            mkdir -p "tmp_excluded/$(dirname $file)"
+            mv "$file" "tmp_excluded/$file" || true
+          done
+          
+          # Move dynamic admin pages
+          find src/app/admin -type d -name "[*]" | while read dir; do
+            mkdir -p "tmp_excluded/$dir"
+            mv "$dir"/* "tmp_excluded/$dir/" 2>/dev/null || true
+          done
+      
+      - name: Build with Next.js
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy-value-for-build.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'dummy-value-for-build' }}
+          SITE_URL: https://mossyblog.github.io/riagenicblog
+        run: npx next build --no-lint
+      
+      - name: Restore excluded files
+        run: |
+          # Move back excluded files
+          find tmp_excluded -type f 2>/dev/null | while read file; do
+            actual_file=$(echo $file | sed 's|tmp_excluded/||')
+            mkdir -p "$(dirname $actual_file)"
+            mv "$file" "$actual_file" || true
+          done
+          rm -rf tmp_excluded
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
