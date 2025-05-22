@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import { getAllPostsFromSupabase } from '@/lib/supabase-posts';
 import { getAllPosts } from '@/lib/posts';
 
-export const dynamic = "force-dynamic";
-
 export async function GET() {
   try {
     // Try to get posts from Supabase first, fall back to filesystem
