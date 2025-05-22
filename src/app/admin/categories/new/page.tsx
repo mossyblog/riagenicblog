@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import React from 'react';
 import CategoryForm from '@/components/admin/CategoryForm';
 

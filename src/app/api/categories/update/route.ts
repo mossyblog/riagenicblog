@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server';
 import { getCategoryById, updateCategory } from '@/lib/categories';
 import { requireAuth } from '@/lib/auth';

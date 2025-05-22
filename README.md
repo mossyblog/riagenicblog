@@ -67,6 +67,8 @@ npm run build
 
 This will create a production build optimized for server-side rendering.
 
+> **Note**: This application requires a live Supabase backend for all environments. The app is fully dynamic/SSR and does not use static generation.
+
 ### Deploying to Vercel
 
 The simplest way to deploy this application is with Vercel:
@@ -80,24 +82,7 @@ The simplest way to deploy this application is with Vercel:
    ```
 3. Deploy!
 
-### Deploying to GitHub Pages
-
-For a static site deployment to GitHub Pages:
-
-1. Uncomment the following lines in `next.config.ts`:
-   ```typescript
-   // output: 'export',
-   // trailingSlash: true,
-   // basePath: '/riagenicblog',
-   ```
-
-2. Use the GitHub Actions workflow in `.github/workflows/deploy-pages.yml`:
-   - Go to your repository's Actions tab
-   - Run the "Deploy to GitHub Pages" workflow manually
-
-This will generate a static export and deploy it to GitHub Pages.
-
-Note: Since GitHub Pages is a static hosting service, dynamic features that require server-side rendering (like API routes and authentication) won't work in the GitHub Pages deployment.
+> **Important**: This application requires server-side rendering and cannot be deployed as a static site. It requires a hosting platform that supports Next.js SSR functionality and a live Supabase backend.
 
 ## Code Quality & Error Checking
 
