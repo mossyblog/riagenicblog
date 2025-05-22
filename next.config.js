@@ -9,7 +9,6 @@ const nextConfig = {
   },
   // Configure image domains if needed
   images: {
-    unoptimized: true, // For static export
   },
   // For GitHub Pages deployment, uncomment these:
   // output: 'export',
