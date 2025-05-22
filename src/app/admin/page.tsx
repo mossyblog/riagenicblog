@@ -4,6 +4,8 @@ import { getAllPostsForAdmin } from '@/lib/supabase-posts';
 import { getAllCategories } from '@/lib/categories';
 import { getCurrentUser } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
   // Get counts
   const posts = await getAllPostsForAdmin();

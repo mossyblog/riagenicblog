@@ -2,6 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import { requireAuth } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminLayout({
   children,
 }: {

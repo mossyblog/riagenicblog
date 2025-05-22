@@ -5,6 +5,8 @@ import PostList from '@/components/PostList';
 import Link from 'next/link';
 import { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Blog | DevMarkBlog',
   description: 'Articles about development, technology, and programming',

@@ -2,6 +2,8 @@ import React from 'react';
 import PostForm from '@/components/admin/PostForm';
 import { getAllCategories } from '@/lib/categories';
 
+export const dynamic = 'force-dynamic';
+
 export default async function CreatePostPage() {
   // Get categories for the form
   const categories = await getAllCategories();

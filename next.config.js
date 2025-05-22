@@ -16,12 +16,15 @@ const nextConfig = {
   // basePath: '/riagenicblog',
   
   // Fix for lightningcss module resolution issues
-  serverExternalPackages: ['@uiw/react-md-editor', '@uiw/react-markdown-preview'],
+  // serverExternalPackages: ['@uiw/react-md-editor', '@uiw/react-markdown-preview'],
   
   // Add webpack configuration to handle CSS from @uiw/react-md-editor
   webpack: (config) => {
     return config;
   },
+  // experimental: {
+  //   legacyCssImports: true,
+  // },
 };
 
 module.exports = nextConfig;

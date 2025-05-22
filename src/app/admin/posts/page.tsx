@@ -2,6 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import { getAllPostsForAdmin } from '@/lib/supabase-posts';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminPostsPage() {
   const posts = await getAllPostsForAdmin();
 

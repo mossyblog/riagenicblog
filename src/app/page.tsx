@@ -3,6 +3,8 @@ import { getAllPosts } from '@/lib/posts';
 import { Metadata } from 'next';
 import { getAllPostsFromSupabase } from '@/lib/supabase-posts';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'DevMarkBlog - A Developer-Friendly Markdown Blog',
   description: 'A minimal, performant, developer-friendly blog site using Next.js, TypeScript, and Markdown files',

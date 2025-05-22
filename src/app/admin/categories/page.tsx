@@ -2,6 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import { getAllCategories } from '@/lib/categories';
 
+export const dynamic = 'force-dynamic';
+
 export default async function CategoriesPage() {
   const categories = await getAllCategories();
 
