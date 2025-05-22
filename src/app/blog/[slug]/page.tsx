@@ -6,9 +6,6 @@ import { components } from '@/components/MDXComponents';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 
-export const dynamic = 'force-dynamic';
-export const dynamicParams = true;
-
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const { slug } = params;
   

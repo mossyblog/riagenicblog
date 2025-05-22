@@ -3,8 +3,6 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import type { CookieOptions } from '@supabase/ssr';
 
-export const dynamic = 'force-dynamic';
-
 export async function POST() {
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || '',

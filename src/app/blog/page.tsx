@@ -10,9 +10,6 @@ export const metadata: Metadata = {
   description: 'Articles about development, technology, and programming',
 };
 
-// Set dynamic rendering for Server-Side Rendering
-export const dynamic = 'force-dynamic';
-
 export default async function BlogPage() {
   // Try to get posts from Supabase first, fall back to filesystem if needed
   let posts = [];
