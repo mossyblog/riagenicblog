@@ -3,9 +3,8 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import CategoryForm from '@/components/admin/CategoryForm';
 import { getCategoryById } from '@/lib/categories';
-import { PageProps } from '@/types';
 
-export default async function EditCategoryPage({ params }: PageProps) {
+export default async function EditCategoryPage({ params }: { params: { id: string } }) {
   const category = await getCategoryById(params.id);
   
   if (!category) {
