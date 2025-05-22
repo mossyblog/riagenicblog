@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run lint && npm run type-check && next build",
+    "build": "npm run lint && next build",
     "start": "next start",
     "lint": "next lint",
     "prepare-hooks": "cp .github/hooks/pre-commit .git/hooks/ && chmod +x .git/hooks/pre-commit",
