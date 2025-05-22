@@ -4,9 +4,8 @@ import { notFound } from 'next/navigation';
 import PostForm from '@/components/admin/PostForm';
 import { getPostById } from '@/lib/supabase-posts';
 import { getAllCategories } from '@/lib/categories';
-import { PageProps } from '@/types';
 
-export default async function EditPostPage({ params }: PageProps) {
+export default async function EditPostPage({ params }: { params: { id: string } }) {
   const [post, categories] = await Promise.all([
     getPostById(params.id),
     getAllCategories()

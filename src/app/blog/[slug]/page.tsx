@@ -5,12 +5,11 @@ import PostLayout from '@/components/PostLayout';
 import { components } from '@/components/MDXComponents';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { PageProps } from '@/types';
 
 export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const { slug } = params;
   
   if (!slug) {
@@ -51,7 +50,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function BlogPostPage({ params }: PageProps) {
+export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
   
   // Try to get post from Supabase first, fall back to filesystem
