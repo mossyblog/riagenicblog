@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server';
 import { getPostById, updatePost } from '@/lib/supabase-posts';
 import { requireAuth } from '@/lib/auth';

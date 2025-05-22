@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import type { Metadata } from "next";
 import "./globals.css";
 import Link from "next/link";
@@ -17,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark:bg-gray-900 dark:text-gray-100">
       <head>
-        <link rel="alternate" type="application/rss+xml" title="RSS" href="/riagenicblog/rss.xml" />
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="/api/rss" />
       </head>
       <body className="antialiased">
         <header className="border-b border-gray-200 dark:border-gray-800">

@@ -43,15 +43,3 @@ export function getPostBySlug(slug: string): PostData | null {
   const posts = getAllPosts();
   return posts.find(post => post.slug === slug) || null;
 }
-
-/**
- * Get paths for all posts (for static generation)
- */
-export function getAllPostPaths() {
-  const posts = getAllPosts();
-  return posts.map(post => ({
-    params: {
-      slug: post.slug,
-    },
-  }));
-}

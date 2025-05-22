@@ -1,5 +1,5 @@
 // Define the PageProps interface as expected by Next.js
 export interface PageProps {
-  params: any;
-  searchParams?: any;
+  params: Record<string, string>;
+  searchParams?: Record<string, string | string[]>;
 }

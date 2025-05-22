@@ -1,14 +1,33 @@
 import Link from 'next/link';
 import { getAllPosts } from '@/lib/posts';
 import { Metadata } from 'next';
+import { getAllPostsFromSupabase } from '@/lib/supabase-posts';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'DevMarkBlog - A Developer-Friendly Markdown Blog',
   description: 'A minimal, performant, developer-friendly blog site using Next.js, TypeScript, and Markdown files',
 };
 
-export default function Home() {
-  const recentPosts = getAllPosts().slice(0, 3);
+export default async function Home() {
+  // Try to get posts from Supabase first, fall back to filesystem if needed
+  let posts = [];
+  
+  try {
+    // Get posts from Supabase
+    posts = await getAllPostsFromSupabase();
+    
+    // If no posts in Supabase yet, fall back to filesystem
+    if (posts.length === 0) {
+      posts = getAllPosts();
+    }
+  } catch (error) {
+    console.error('Error fetching posts from Supabase, falling back to filesystem:', error);
+    posts = getAllPosts();
+  }
+  
+  const recentPosts = posts.slice(0, 3);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
