@@ -2,13 +2,9 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import CategoryForm from '@/components/admin/CategoryForm';
 import { getCategoryById } from '@/lib/categories';
+import { PageProps } from '@/types';
 
-type EditCategoryPageOwnProps = {
-  params: { id: string };
-  searchParams?: Record<string, string | string[] | undefined>;
-};
-
-export default async function EditCategoryPage({ params }: EditCategoryPageOwnProps) {
+export default async function EditCategoryPage({ params }: PageProps) {
   const category = await getCategoryById(params.id);
   
   if (!category) {
