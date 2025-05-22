@@ -1,7 +1,5 @@
-import type { NextConfig } from "next";
-
-// Next.js configuration
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   // Skip TypeScript type checking during builds
   typescript: {
     ignoreBuildErrors: true, 
@@ -17,6 +15,14 @@ const nextConfig: NextConfig = {
   // output: 'export',
   // trailingSlash: true,
   // basePath: '/riagenicblog',
+  
+  // Fix for lightningcss module resolution issues
+  serverExternalPackages: ['@uiw/react-md-editor', '@uiw/react-markdown-preview'],
+  
+  // Add webpack configuration to handle CSS from @uiw/react-md-editor
+  webpack: (config) => {
+    return config;
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
