@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { getAllCategories } from '@/lib/categories';
+import DeleteCategoryButton from '@/components/admin/DeleteCategoryButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -67,19 +68,7 @@ export default async function CategoriesPage() {
                       >
                         Edit
                       </Link>
-                      <form action={`/api/categories/delete?id=${category.id}`} method="POST">
-                        <button
-                          type="submit"
-                          className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                          onClick={(e) => {
-                            if (!confirm('Are you sure you want to delete this category?')) {
-                              e.preventDefault();
-                            }
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </form>
+                      <DeleteCategoryButton categoryId={category.id} categoryName={category.name} />
                     </div>
                   </td>
                 </tr>

@@ -17,17 +17,12 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
   }
   
-  // Try to get post from Supabase first, fall back to filesystem
   let post = null;
   
   try {
     post = await getPostBySlugFromSupabase(slug);
-    if (!post) {
-      post = getPostBySlug(slug);
-    }
   } catch (error) {
-    console.error('Error fetching post from Supabase, falling back to filesystem:', error);
-    post = getPostBySlug(slug);
+    console.error('Error fetching post from Supabase:', error);
   }
   
   if (!post) {
@@ -52,17 +47,12 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
   
-  // Try to get post from Supabase first, fall back to filesystem
   let post = null;
   
   try {
     post = await getPostBySlugFromSupabase(slug);
-    if (!post) {
-      post = getPostBySlug(slug);
-    }
   } catch (error) {
-    console.error('Error fetching post from Supabase, falling back to filesystem:', error);
-    post = getPostBySlug(slug);
+    console.error('Error fetching post from Supabase:', error);
   }
   
   if (!post) {

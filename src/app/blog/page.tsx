@@ -21,12 +21,14 @@ export default async function BlogPage() {
     posts = await getAllPostsFromSupabase();
     
     // If no posts in Supabase yet, fall back to filesystem
-    if (posts.length === 0) {
-      posts = getAllPosts();
-    }
+    // if (posts.length === 0) { // Fallback logic removed
+    //   posts = getAllPosts();
+    // }
   } catch (error) {
-    console.error('Error fetching posts from Supabase, falling back to filesystem:', error);
-    posts = getAllPosts();
+    console.error('Error fetching posts from Supabase:', error); // Keep error logging
+    // posts = getAllPosts(); // Fallback logic removed
+    // Ensure posts is an array even if Supabase fetch fails, to prevent render errors
+    posts = [];
   }
 
   return (

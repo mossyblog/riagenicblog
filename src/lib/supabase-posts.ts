@@ -25,7 +25,7 @@ export async function getAllPostsFromSupabase(): Promise<PostData[]> {
   const { data, error } = await supabase
     .from('posts')
     .select('*')
-    .eq('status', 'published')
+    .eq('is_published', true)
     .order('published_at', { ascending: false });
     
   if (error || !data) {
@@ -46,7 +46,7 @@ export async function getPostBySlugFromSupabase(slug: string): Promise<PostData 
     .from('posts')
     .select('*')
     .eq('slug', slug)
-    .eq('status', 'published')
+    .eq('is_published', true)
     .single();
     
   if (error || !data) {

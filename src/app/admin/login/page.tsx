@@ -2,12 +2,14 @@
 
 import React, { FormEvent, useState } from 'react';
 import { createClient } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -26,7 +28,7 @@ export default function LoginPage() {
       }
 
       // Redirect to admin dashboard
-      window.location.href = '/admin';
+      router.push('/admin');
     } catch (err: unknown) {
       const error = err && typeof err === 'object' && 'message' in err 
         ? err.message as string 

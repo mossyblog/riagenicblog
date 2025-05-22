@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Link from "next/link";
+import { initializeDatabaseTables } from '@/lib/db-init';
 
 export const metadata: Metadata = {
   title: "DevMarkBlog - A Developer-Friendly Markdown Blog",
@@ -9,11 +10,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.SITE_URL || "https://example.com"),
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  await initializeDatabaseTables();
+
   return (
     <html lang="en" className="dark:bg-gray-900 dark:text-gray-100">
       <head>

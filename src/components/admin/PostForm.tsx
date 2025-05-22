@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Post } from '@/lib/database.types';
 import slugify from '@/lib/utils/slugify';
 import { ensureErrorWithMessage } from '@/lib/error-types';
+import SubmitButton from './SubmitButton';
 
 // Dynamically import the markdown editor to avoid SSR issues
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
@@ -231,13 +232,11 @@ export default function PostForm({ post, categories }: PostFormProps) {
         >
           Cancel
         </button>
-        <button
-          type="submit"
-          disabled={isSaving}
-          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-400"
-        >
-          {isSaving ? 'Saving...' : isEditing ? 'Update Post' : 'Create Post'}
-        </button>
+        <SubmitButton 
+          isSaving={isSaving} 
+          isEditing={isEditing} 
+          buttonText={isSaving ? 'Saving...' : (isEditing ? 'Update Post' : 'Create Post')}
+        />
       </div>
     </form>
   );
