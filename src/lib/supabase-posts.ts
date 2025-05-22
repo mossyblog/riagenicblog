@@ -1,31 +1,28 @@
 import { createClient } from './auth';
 import { Post as SupabasePost } from './database.types';
-import { PostData } from './markdown';
+import { 
+  PostDataType, 
+  createEcsWorld, 
+  addPostEntity, 
+  extractPostsFromWorld, 
+  ecsPostToPostData,
+  PostData,
+  IPost,
+  NeedsSaveToSupabase,
+  SupabasePersistenceSystem
+} from './ecs';
 
 /**
- * Convert a Supabase post to a PostData object for compatibility with existing components
+ * Get all published posts from Supabase using ECS
  */
-export function supabasePostToPostData(post: SupabasePost): PostData {
-  return {
-    title: post.title,
-    date: post.published_at || post.updated_at || new Date().toISOString(),
-    slug: post.slug,
-    description: post.excerpt || '',
-    content: post.content,
-    tags: [], // Tags will be implemented in V2
-  };
-}
-
-/**
- * Get all published posts from Supabase
- */
-export async function getAllPostsFromSupabase(): Promise<PostData[]> {
+export async function getAllPostsFromSupabase(): Promise<PostDataType[]> {
   const supabase = createClient();
+  const world = createEcsWorld();
   
   const { data, error } = await supabase
     .from('posts')
     .select('*')
-    .eq('is_published', true)
+    .eq('status', 'published')
     .order('published_at', { ascending: false });
     
   if (error || !data) {
@@ -33,20 +30,30 @@ export async function getAllPostsFromSupabase(): Promise<PostData[]> {
     return [];
   }
   
-  return data.map(supabasePostToPostData);
+  // Add each post to the ECS world
+  for (const post of data) {
+    addPostEntity(world, post);
+  }
+  
+  // Extract posts from the world
+  const posts = extractPostsFromWorld(world);
+  
+  // Convert to PostDataType for client components
+  return posts.map(ecsPostToPostData);
 }
 
 /**
- * Get a post by its slug from Supabase
+ * Get a post by its slug from Supabase using ECS
  */
-export async function getPostBySlugFromSupabase(slug: string): Promise<PostData | null> {
+export async function getPostBySlugFromSupabase(slug: string): Promise<PostDataType | null> {
   const supabase = createClient();
+  const world = createEcsWorld();
   
   const { data, error } = await supabase
     .from('posts')
     .select('*')
     .eq('slug', slug)
-    .eq('is_published', true)
+    .eq('status', 'published')
     .single();
     
   if (error || !data) {
@@ -54,14 +61,26 @@ export async function getPostBySlugFromSupabase(slug: string): Promise<PostData 
     return null;
   }
   
-  return supabasePostToPostData(data);
+  // Add post to the ECS world
+  addPostEntity(world, data);
+  
+  // Extract post from the world
+  const posts = extractPostsFromWorld(world);
+  
+  if (posts.length === 0) {
+    return null;
+  }
+  
+  // Convert to PostDataType for client components
+  return ecsPostToPostData(posts[0]);
 }
 
 /**
- * Admin: Get all posts (including drafts) from Supabase
+ * Admin: Get all posts (including drafts) from Supabase using ECS
  */
 export async function getAllPostsForAdmin(): Promise<SupabasePost[]> {
   const supabase = createClient();
+  const world = createEcsWorld();
   
   const { data, error } = await supabase
     .from('posts')
@@ -73,14 +92,21 @@ export async function getAllPostsForAdmin(): Promise<SupabasePost[]> {
     return [];
   }
   
-  return data;
+  // Add all posts to the ECS world
+  for (const post of data) {
+    addPostEntity(world, post);
+  }
+  
+  // Extract posts from the world
+  return extractPostsFromWorld(world) as unknown as SupabasePost[];
 }
 
 /**
- * Admin: Get a post by ID for editing
+ * Admin: Get a post by ID for editing using ECS
  */
 export async function getPostById(id: string): Promise<SupabasePost | null> {
   const supabase = createClient();
+  const world = createEcsWorld();
   
   const { data, error } = await supabase
     .from('posts')
@@ -93,52 +119,91 @@ export async function getPostById(id: string): Promise<SupabasePost | null> {
     return null;
   }
   
-  return data;
+  // Add post to the ECS world
+  addPostEntity(world, data);
+  
+  // Extract post from the world
+  const posts = extractPostsFromWorld(world);
+  
+  if (posts.length === 0) {
+    return null;
+  }
+  
+  return posts[0] as unknown as SupabasePost;
 }
 
 /**
- * Admin: Create a new post
+ * Admin: Create a new post using ECS
  */
 export async function createPost(post: Omit<SupabasePost, 'id'>): Promise<SupabasePost | null> {
   const supabase = createClient();
+  const world = createEcsWorld();
   
-  const { data, error } = await supabase
-    .from('posts')
-    .insert([{ ...post, updated_at: new Date().toISOString() }])
-    .select()
-    .single();
-    
-  if (error || !data) {
-    console.error('Error creating post:', error);
+  // Create entity in the ECS world
+  const entity = world.createEntity();
+  const postWithTimestamp = { ...post, updated_at: new Date().toISOString() };
+  entity.addComponent(PostData, { value: postWithTimestamp as unknown as IPost });
+  entity.addComponent(NeedsSaveToSupabase);
+  
+  // Use our persistence system
+  const persistenceSystem = new SupabasePersistenceSystem(world, supabase);
+  await persistenceSystem.persistPosts();
+  
+  // Extract the created post
+  const posts = extractPostsFromWorld(world);
+  
+  if (posts.length === 0) {
     return null;
   }
   
-  return data;
+  return posts[0] as unknown as SupabasePost;
 }
 
 /**
- * Admin: Update an existing post
+ * Admin: Update an existing post using ECS
  */
 export async function updatePost(id: string, post: Partial<SupabasePost>): Promise<SupabasePost | null> {
   const supabase = createClient();
+  const world = createEcsWorld();
   
-  const { data, error } = await supabase
+  // First get the existing post
+  const { data: existingPost, error: fetchError } = await supabase
     .from('posts')
-    .update({ ...post, updated_at: new Date().toISOString() })
+    .select('*')
     .eq('id', id)
-    .select()
     .single();
     
-  if (error || !data) {
-    console.error(`Error updating post with ID "${id}":`, error);
+  if (fetchError || !existingPost) {
+    console.error(`Error fetching post with ID "${id}" for update:`, fetchError);
     return null;
   }
   
-  return data;
+  // Create entity with updated post data
+  const entity = world.createEntity();
+  const updatedPost = { 
+    ...existingPost, 
+    ...post, 
+    updated_at: new Date().toISOString() 
+  };
+  entity.addComponent(PostData, { value: updatedPost as unknown as IPost });
+  entity.addComponent(NeedsSaveToSupabase);
+  
+  // Use our persistence system
+  const persistenceSystem = new SupabasePersistenceSystem(world, supabase);
+  await persistenceSystem.persistPosts();
+  
+  // Extract the updated post
+  const posts = extractPostsFromWorld(world);
+  
+  if (posts.length === 0) {
+    return null;
+  }
+  
+  return posts[0] as unknown as SupabasePost;
 }
 
 /**
- * Admin: Delete a post
+ * Admin: Delete a post using ECS (minimal ECS usage as deletion is straightforward)
  */
 export async function deletePost(id: string): Promise<boolean> {
   const supabase = createClient();
