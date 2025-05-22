@@ -1,8 +1,16 @@
 import { createClient } from './auth';
 import { Category } from './database.types';
 
+// We're still importing the ECS-related types for future use,
+// but not actively using them in API routes yet
+import { 
+  ICategory,
+  CategoryData
+} from './ecs';
+
 /**
  * Get all categories from Supabase
+ * TODO: Fully implement ECS pattern once server-side compatibility issues are resolved
  */
 export async function getAllCategories(): Promise<Category[]> {
   const supabase = createClient();
@@ -22,6 +30,7 @@ export async function getAllCategories(): Promise<Category[]> {
 
 /**
  * Get a category by ID
+ * TODO: Fully implement ECS pattern once server-side compatibility issues are resolved
  */
 export async function getCategoryById(id: string): Promise<Category | null> {
   const supabase = createClient();
@@ -42,6 +51,7 @@ export async function getCategoryById(id: string): Promise<Category | null> {
 
 /**
  * Create a new category
+ * TODO: Fully implement ECS pattern once server-side compatibility issues are resolved
  */
 export async function createCategory(category: Omit<Category, 'id'>): Promise<Category | null> {
   const supabase = createClient();
@@ -62,6 +72,7 @@ export async function createCategory(category: Omit<Category, 'id'>): Promise<Ca
 
 /**
  * Update an existing category
+ * TODO: Fully implement ECS pattern once server-side compatibility issues are resolved
  */
 export async function updateCategory(id: string, category: Partial<Category>): Promise<Category | null> {
   const supabase = createClient();
@@ -83,6 +94,7 @@ export async function updateCategory(id: string, category: Partial<Category>): P
 
 /**
  * Delete a category
+ * TODO: Fully implement ECS pattern once server-side compatibility issues are resolved
  */
 export async function deleteCategory(id: string): Promise<boolean> {
   const supabase = createClient();

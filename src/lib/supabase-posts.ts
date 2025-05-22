@@ -1,11 +1,16 @@
 import { createClient } from './auth';
 import { Post as SupabasePost } from './database.types';
-import { PostData } from './markdown';
+import { 
+  PostDataType,
+  IPost,
+  PostData
+} from './ecs';
 
 /**
  * Convert a Supabase post to a PostData object for compatibility with existing components
+ * This is a temporary function until we fully implement the ECS pattern
  */
-export function supabasePostToPostData(post: SupabasePost): PostData {
+export function supabasePostToPostData(post: SupabasePost): PostDataType {
   return {
     title: post.title,
     date: post.published_at || post.updated_at || new Date().toISOString(),
@@ -18,14 +23,15 @@ export function supabasePostToPostData(post: SupabasePost): PostData {
 
 /**
  * Get all published posts from Supabase
+ * TODO: Fully implement ECS pattern once server-side compatibility issues are resolved
  */
-export async function getAllPostsFromSupabase(): Promise<PostData[]> {
+export async function getAllPostsFromSupabase(): Promise<PostDataType[]> {
   const supabase = createClient();
   
   const { data, error } = await supabase
     .from('posts')
     .select('*')
-    .eq('is_published', true)
+    .eq('status', 'published')
     .order('published_at', { ascending: false });
     
   if (error || !data) {
@@ -38,15 +44,16 @@ export async function getAllPostsFromSupabase(): Promise<PostData[]> {
 
 /**
  * Get a post by its slug from Supabase
+ * TODO: Fully implement ECS pattern once server-side compatibility issues are resolved
  */
-export async function getPostBySlugFromSupabase(slug: string): Promise<PostData | null> {
+export async function getPostBySlugFromSupabase(slug: string): Promise<PostDataType | null> {
   const supabase = createClient();
   
   const { data, error } = await supabase
     .from('posts')
     .select('*')
     .eq('slug', slug)
-    .eq('is_published', true)
+    .eq('status', 'published')
     .single();
     
   if (error || !data) {
@@ -59,6 +66,7 @@ export async function getPostBySlugFromSupabase(slug: string): Promise<PostData 
 
 /**
  * Admin: Get all posts (including drafts) from Supabase
+ * TODO: Fully implement ECS pattern once server-side compatibility issues are resolved
  */
 export async function getAllPostsForAdmin(): Promise<SupabasePost[]> {
   const supabase = createClient();
@@ -78,6 +86,7 @@ export async function getAllPostsForAdmin(): Promise<SupabasePost[]> {
 
 /**
  * Admin: Get a post by ID for editing
+ * TODO: Fully implement ECS pattern once server-side compatibility issues are resolved
  */
 export async function getPostById(id: string): Promise<SupabasePost | null> {
   const supabase = createClient();
@@ -98,6 +107,7 @@ export async function getPostById(id: string): Promise<SupabasePost | null> {
 
 /**
  * Admin: Create a new post
+ * TODO: Fully implement ECS pattern once server-side compatibility issues are resolved
  */
 export async function createPost(post: Omit<SupabasePost, 'id'>): Promise<SupabasePost | null> {
   const supabase = createClient();
@@ -118,6 +128,7 @@ export async function createPost(post: Omit<SupabasePost, 'id'>): Promise<Supaba
 
 /**
  * Admin: Update an existing post
+ * TODO: Fully implement ECS pattern once server-side compatibility issues are resolved
  */
 export async function updatePost(id: string, post: Partial<SupabasePost>): Promise<SupabasePost | null> {
   const supabase = createClient();
@@ -139,6 +150,7 @@ export async function updatePost(id: string, post: Partial<SupabasePost>): Promi
 
 /**
  * Admin: Delete a post
+ * TODO: Fully implement ECS pattern once server-side compatibility issues are resolved
  */
 export async function deletePost(id: string): Promise<boolean> {
   const supabase = createClient();

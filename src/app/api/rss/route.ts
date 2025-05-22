@@ -1,25 +1,18 @@
 import { NextResponse } from 'next/server';
 import { getAllPostsFromSupabase } from '@/lib/supabase-posts';
-import { getAllPosts } from '@/lib/posts';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    // Try to get posts from Supabase first, fall back to filesystem
+    // Try to get posts from Supabase
     let posts = [];
     
     try {
       // Get posts from Supabase
       posts = await getAllPostsFromSupabase();
-      
-      // If no posts in Supabase yet, fall back to filesystem
-      if (posts.length === 0) {
-        posts = getAllPosts();
-      }
     } catch (error) {
-      console.error('Error fetching posts from Supabase for RSS, falling back to filesystem:', error);
-      posts = getAllPosts();
+      console.error('Error fetching posts from Supabase for RSS:', error);
     }
     
     const siteURL = process.env.SITE_URL || 'https://example.com';
