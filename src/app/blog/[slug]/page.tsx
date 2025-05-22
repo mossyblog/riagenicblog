@@ -5,15 +5,10 @@ import PostLayout from '@/components/PostLayout';
 import { components } from '@/components/MDXComponents';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
+import { PageProps } from '@/types';
 
 export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
-
-// Match Next.js generated PageProps type exactly
-interface PageProps {
-  params: { slug: string };
-  searchParams?: Record<string, string | string[] | undefined>;
-}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = params;
