@@ -1,0 +1,105 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+====================================
+AI Assistant Rules for Jarvis Interaction
+====================================
+
+VI. Jarvis Framework (`risksec.core.jarvis`) Conventions
+-------------------------------------------------------
+*   **Accessing Services:**
+    - Use `_dataContext.Service<TService>(entityId)` to obtain an instance of a service (`TService`) operating within the context of a specific entity identified by `entityId`.
+    - Assume `TService` inherits from `BaseService` or a similar base class that provides entity context management.
+*   **Entity Context:**
+    - Services obtained via `_dataContext.Service<T>()` are *stateful* and scoped to the `entityId` provided during retrieval.
+    - Operations performed through these services typically act upon components associated with that specific entity.
+    - The current entity context (and its ID) within a service can usually be accessed via methods like `EntityContext()` or `EntityId()` inherited from the base service class.
+*   **Data Persistence:**
+    - Operations within a service method that modify entity state (e.g., updating components, adding components) are staged within the entity's context.
+    - **Crucially:** These changes are *not* saved until `_dataContext.Commit(cancellationToken)` is called.
+    - Service methods that modify data *should* clearly document (using `<remarks>`) if they stage changes that require a subsequent `Commit` by the caller.
+    - Service methods that perform their own `Commit` (like the `Void` or `MarkAsWriteOff` examples in `PaymentService`) should also document this behavior.
+*   **Retrieving Components:**
+    - Within a service, use methods like `Get<TComponent>()` or `TryGet<TComponent>()` (often provided by the base service) to retrieve components associated with the current entity context.
+*   **Updating Components:**
+    - After modifying a component retrieved via `Get<T>()`, use `EntityContext().Set(component)` to stage the changes within the current entity's context before a `Commit`.
+*   **Error Handling:**
+    - Be mindful of potential `ComponentNotFoundException` or similar exceptions when retrieving components that might not exist on the entity.
+    - Handle potential `InvalidOperationException` for state transitions or operations that are not valid in the current entity/component state.
+*   **Service Implementation:**
+    - Services should encapsulate logic specific to a particular domain or component type (e.g., `PaymentService`, `InvoiceService`).
+    - Inject necessary dependencies (like `ILogger`, other services, or configuration) into service constructors, typically managed by the DI container configured for `IDataContext`.
+    - Adhere to all general C# rules (Section II-V) when implementing service methods.
+
+VII. Jarvis Service Relationships (Typical Hierarchy)
+----------------------------------------------------
+*   **Context:** Services often represent entities or processes that have hierarchical or dependent relationships within the business domain.
+*   **Example Flow:** A common pattern observed is:
+    `ClientProfileService` (Manages client entities)
+      -> `WorkOrderService` (Manages work orders belonging to a client)
+        -> `InvoiceService` (Manages invoices generated from work orders)
+          -> `PaymentService` (Manages payments applied to invoices)
+            -> `TransactionService` (Manages detailed transaction records for payments)
+*   **Nature of Relationship:**
+    - This hierarchy typically reflects data dependency (e.g., an Invoice needs a Work Order ID, a Payment needs an Invoice ID).
+    - It might also represent a typical workflow or orchestration sequence.
+    - This is a conceptual model based on the domain; the Jarvis framework itself doesn't enforce this structure rigidly but enables it through entity composition. Services can potentially be called in different orders depending on the use case, but understanding this common flow provides context.    
+*   **Hierarchy Context:** The typical flow (`ClientProfile` -> `WorkOrder` -> `Invoice` -> `Payment` -> `Transaction`) reflects data dependencies (e.g., Payment needs Invoice ID) and a common operational sequence.
+*   **Scope of Responsibility:** This hierarchy also implies a scope of responsibility. Higher-level services (like `InvoiceService`) are responsible for business logic involving their component (`Invoice`) and potentially coordinating actions involving child components (like `Payment`).
+*   **Top-Down Logic:** Business rules spanning multiple components (e.g., validating if a payment amount matches the invoice total before marking an invoice as paid) should typically reside in the service responsible for the *parent* or orchestrating entity (`InvoiceService` in this example), or potentially in a separate orchestration layer. The child service (`PaymentService`) focuses on its own state transitions (e.g., marking a payment as `Applied`).
+*   **Interaction:** A parent service might retrieve its own component, then retrieve a child service (`_dataContext.PaymentService(...)`) to perform an action on the child component, and finally commit the changes. The child service focuses solely on the validity and execution of *its* specific task.
+*   **Conceptual Model:** This is a domain model pattern enabled by Jarvis, not rigidly enforced by the framework itself.
+
+
+VIII. Jarvis In-Memory vs. I/O Operations (Unit of Work)
+-------------------------------------------------------
+*   **Entity Context as Working Memory:**
+    - When a service is obtained (`_dataContext.ServiceNameGoesHere<T>(entityId)`), the associated `EntityContext` loads a representation (snapshot) of the entity and its components into memory. (eg `_dataContext.PaymentService(..)` or `_dataContext.InvoiceService(...)`)
+    - All subsequent operations *within that service instance* operate on this in-memory data.
+*   **Read Operations (`Get<T>`, `TryGet<T>`):**
+    - These are typically fast, in-memory lookups within the current `EntityContext`. They read from the snapshot loaded initially or modified by subsequent `Set<T>` calls within the same unit of work.
+    - They do *not* typically trigger database reads after the initial load of the context unless explicitly designed to do so (which would be unusual for this pattern).
+*   **Write Operations (`Set<T>`):**
+    - These modify the in-memory representation of a component within the `EntityContext`.
+    - They are fast (memory operations).
+    - They "stage" the change, marking the component as modified within the context. The collection of staged changes represents the intended future state of the entity.
+*   **Commit Operation (`_dataContext.Commit()`):**
+    - This is the primary **I/O Boundary**.
+    - Calling `Commit` takes the *entire current state* of the in-memory `EntityContext` (including all staged changes) and persists it to the underlying data store (e.g., Cosmos DB).
+    - This is typically an atomic operation (Unit of Work pattern): either all staged changes are saved successfully, or none are.
+    - `Commit` replaces the previously stored version of the entity with the current in-memory version.
+    - This operation involves network I/O and database interaction, making it significantly slower than in-memory reads/writes.
+*   **History/Auditing:**
+    - The framework itself (based on these rules) focuses on the current state and committing snapshots.
+    - While `Commit` overwrites the previous state, detailed change history or auditing is typically handled by separate mechanisms (e.g., change feed processors, explicit audit log components) rather than being inherent in the basic `Get`/`Set`/`Commit` flow.
+    
+IX. Jarvis Storage Mechanism & Data Flow
+----------------------------------------
+*   **Core Components:**
+    *   **`PartitionDocument`:** Represents the entity data structure *as stored* in the underlying persistence layer (e.g., a Cosmos DB document). Contains the serialized entity state.
+    *   **`PartitionStorage`:** The abstraction layer responsible for direct interaction (read/write/delete) with the physical data store (e.g., Cosmos DB client operations). It operates on `PartitionDocument` objects or their constituent data.
+    *   **`EntityContext`:** The in-memory, interactive representation of a single entity's state (components, metadata). Loaded from a `PartitionDocument`, holds staged changes made via `Set<T>`.
+    *   **`WorkingSet`:** Manages a collection of `EntityContext` instances within a defined scope (e.g., a request). Tracks which `EntityContext` instances have been modified ("dirty"). Orchestrates the commit process.
+*   **Data Flow:**
+    1.  **Loading an Entity:**
+        *   When an `EntityContext` is required (e.g., via `_dataContext.YourServiceName<T>()`), the `WorkingSet` checks if it's already loaded.
+        *   If not, the `WorkingSet` directs `PartitionStorage` to retrieve the corresponding `PartitionDocument` from the data store using the entity ID and partition key.
+        *   `PartitionStorage` performs the read I/O.
+        *   The retrieved `PartitionDocument` data is used to hydrate a new `EntityContext` instance, which is then managed by the `WorkingSet`.
+    2.  **Modifying an Entity:**
+        *   Services interact with the `EntityContext` via `Get<T>` (in-memory read) and `Set<T>` (in-memory write).
+        *   Calling `Set<T>` on a component marks the `EntityContext` as "dirty" within the `WorkingSet`.
+    3.  **Committing Changes (`_dataContext.Commit()`):**
+        *   The `Commit` call is typically delegated to the `WorkingSet`.
+        *   The `WorkingSet` identifies all "dirty" `EntityContext` instances it manages.
+        *   For each dirty `EntityContext`, its current in-memory state is serialized into the `PartitionDocument` format.
+        *   The `WorkingSet` instructs `PartitionStorage` to persist (e.g., upsert) these generated `PartitionDocument` representations to the data store.
+        *   `PartitionStorage` executes the necessary write I/O operations against the underlying database.
+        *   The `WorkingSet` typically clears the "dirty" status of the committed entities.
+  1.  **Load:** `WorkingSet` checks cache -> tells `PartitionStorage` to read `PartitionDocument` -> `PartitionStorage` performs read I/O -> Data hydrates `EntityContext` managed by `WorkingSet`.
+    2.  **Modify:** Service uses `Get<T>` (read) / `Set<T>` (write) on `EntityContext`. `Set<T>` marks `EntityContext` dirty in `WorkingSet`.
+    3.  **Commit:** `_dataContext.Commit()` delegates to `WorkingSet` -> `WorkingSet` finds dirty `EntityContext`s -> Serializes each to `PartitionDocument` format -> Instructs `PartitionStorage` to persist -> `PartitionStorage` performs write I/O -> `WorkingSet` clears dirty status.
+
+
