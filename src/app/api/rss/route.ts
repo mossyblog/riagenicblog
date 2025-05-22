@@ -1,13 +1,10 @@
-export const dynamic = "force-dynamic";
-import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { NextResponse } from 'next/server';
 import { getAllPostsFromSupabase } from '@/lib/supabase-posts';
 import { getAllPosts } from '@/lib/posts';
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Try to get posts from Supabase first, fall back to filesystem
     let posts = [];
